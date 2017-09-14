@@ -7,7 +7,7 @@ var {User} = require('./models/user');
 
 var app = express();
 
-app.use(bodyParser.json());
+app.use(bodyParser.json()); //parsing JSON into JS obj. 
 
 app.post('/todos', (req, res) => {
 	var todo = new Todo({
@@ -18,13 +18,20 @@ app.post('/todos', (req, res) => {
 		res.send(doc)
 	}, (e) => {
 		res.status(400).send(e);
-	})
+	});
+});
 
+app.get('/todos', (req, res) => {
+	Todo.find().then((todos) => {
+		res.send({todos}) //todos is an array (wrapped in obj) for workability
+	}, (e) => {
+		res.status(400).send(e);
+	})
 })
 
 app.listen(3000, ()=> {
 	console.log('Server is up on port 3000');
 })
 
-
+module.exports = {app};
 
