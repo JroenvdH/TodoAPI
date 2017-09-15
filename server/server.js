@@ -26,8 +26,8 @@ app.get('/todos', (req, res) => {
 		res.send({todos}) //todos is an array (wrapped in obj) for workability
 	}, (e) => {
 		res.status(400).send(e);
-	})
-})
+	});
+});
 
 app.listen(3000, ()=> {
 	console.log('Server is up on port 3000');
