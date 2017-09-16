@@ -3,12 +3,17 @@ const request = require('supertest');
 
 const {app} = require('./../server');
 const {Todo} = require('./../models/todo');
+const{ObjectID} = require('mongodb');
 
 const todos = [{
+	_id: new ObjectID(),
 	text: 'first test todo'
 }, {
+	_id: new ObjectID(),
 	text: 'second test todo'
 }]
+
+var idNotFound = ObjectID('69bc135f66093dc0201bcb31');
 
 //setting up usecases for out tests.E.g. making sure the db is empty so my script 
 //will actually be correct
@@ -71,4 +76,30 @@ describe('GET/todos', () => {
 //no need for params as above (err, res) because I'm not doing anythin async.
 		.end(done);
 	});
-})
+});
+
+describe('GET/todos/id', () => {
+	it('should return todo doc', (done) => {
+		request(app)
+		.get(`/todos/${todos[0]._id.toHexString()}`) //.toHexString converts objID to string
+		.expect(200)
+		.expect((res) => {
+			expect(res.body.todo.text).toBe(todos[0].text);
+		})
+		.end(done);
+	});
+
+	it('Should return 404 if todo not found', (done) => {
+		request(app)
+		.get(`/todos/${idNotFound.toHexString()}`)
+		.expect(404)
+		.end(done);
+	});
+
+	it('Should return 404 for non-object ids', (done) => {
+		request(app)
+		.get('todos/41234')
+		.expect(404)
+		.end(done);
+	});
+});
